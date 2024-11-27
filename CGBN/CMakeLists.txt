@@ -31,7 +31,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CUDA_STANDARD 20)
 set(CUDA_COMPUTE_CAPABILITY "50" CACHE STRING "CUDA Compute Capability")
 set(CMAKE_CUDA_ARCHITECTURES ${CUDA_COMPUTE_CAPABILITY})
-
+set(CGBN_TPI "32" CACHE STRING "Thread per instance for CGBN")
 
 file(GLOB CGBN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cu")
 
@@ -44,6 +44,8 @@ set_target_properties(${PROJECT_NAME}
         CUDA_RESOLVE_DEVICE_SYMBOLS ON
         POSITION_INDEPENDENT_CODE ON
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE CGBN_TPI=${CGBN_TPI})
 
 target_link_libraries(${PROJECT_NAME} gmp)
 # target_sources(${PROJECT_NAME}
