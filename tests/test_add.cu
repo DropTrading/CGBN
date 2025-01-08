@@ -116,13 +116,18 @@ TEST(CGBNTests, CGBNADD) {
   instances=generate_instances(INSTANCES);
   
   cudaSetDevice(0);
-cudaDeviceReset();
+  cudaDeviceReset();
   cudaMalloc((void **)&gpuInstances, sizeof(instance_t)*INSTANCES);
   cudaMemcpy(gpuInstances, instances, sizeof(instance_t)*INSTANCES, cudaMemcpyHostToDevice);
   cgbn_error_report_alloc(&report);
   
   // launch with 32 threads per instance, 128 threads (4 instances) per block
   kernel_add<<<(INSTANCES+3)/4, 128>>>(report, gpuInstances, INSTANCES);
+  cudaError_t err=cudaGetLastError();
+  if (err!=cudaSuccess) {
+    printf("Error cudaGetLastError()=%s\n", cudaGetErrorString(err));
+    exit(-1);
+  }
 
   // error report uses managed memory, so we sync the device (or stream) and check for cgbn errors
   cudaDeviceSynchronize();
